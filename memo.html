@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>아이디어 메모 - BlogAuto Pro</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    .memo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 12px;
+    }
+    .memo-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.15s;
+      position: relative;
+    }
+    .memo-card:hover { border-color: #444; transform: translateY(-2px); }
+    .memo-card-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 8px; }
+    .memo-card-content {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.6;
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .memo-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+    .memo-card-date { font-size: 0.75rem; color: var(--muted); }
+    .memo-card-actions { display: flex; gap: 4px; }
+    .memo-color-bar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+    .tag {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      background: #ffffff10;
+      color: var(--muted);
+      margin-right: 4px;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <a class="header-logo" href="/keywords.html">📋 BlogAuto Pro</a>
+    <nav class="header-nav">
+      <a href="/keywords.html">🔍 <span>키워드</span></a>
+      <a href="/posts.html">📝 <span>발행 글</span></a>
+      <a href="/revenue.html">💰 <span>수익</span></a>
+      <a href="/memo.html" class="active">💡 <span>메모</span></a>
+      <a href="#" id="logoutBtn" style="color:var(--red)">로그아웃</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="page-title">💡 아이디어 메모</div>
+    <div class="page-desc">블로그 아이디어와 메모를 자유롭게 기록하세요</div>
+
+    <!-- 추가 버튼 + 검색 -->
+    <div style="display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap;">
+      <input type="text" class="form-input" id="searchInput" placeholder="메모 검색..." style="flex:1; min-width:160px;" />
+      <button class="btn btn-primary" id="addBtn">+ 메모 추가</button>
+    </div>
+
+    <!-- 메모 그리드 -->
+    <div class="memo-grid" id="memoGrid">
+      <div class="loading">불러오는 중...</div>
+    </div>
+  </div>
+
+  <!-- 모달 -->
+  <div class="modal-overlay" id="modal" style="display:none;">
+    <div class="modal">
+      <div class="modal-title" id="modalTitle">메모 추가</div>
+      <input type="hidden" id="editId" />
+
+      <div class="form-group">
+        <label class="form-label">제목 *</label>
+        <input type="text" class="form-input" id="fTitle" placeholder="메모 제목" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">내용</label>
+        <textarea class="form-textarea" id="fContent" placeholder="아이디어, 참고 링크, 메모 내용..." style="min-height:120px;"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">태그 (쉼표로 구분)</label>
+        <input type="text" class="form-input" id="fTags" placeholder="예: 맛집, 여행, 재테크" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">색상</label>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <label style="display:flex; align-items:center; gap:4px; cursor:pointer; font-size:0.82rem;">
+            <input type="radio" name="color" value="#10b981" checked /> <span style="color:#10b981">● 초록</span>
+          </label>
+          <label style="display:flex; align-items:center; gap:4px; cursor:pointer; font-size:0.82rem;">
+            <input type="radio" name="color" value="#3b82f6" /> <span style="color:#3b82f6">● 파랑</span>
+          </label>
+          <label style="display:flex; align-items:center; gap:4px; cursor:pointer; font-size:0.82rem;">
+            <input type="radio" name="color" value="#f59e0b" /> <span style="color:#f59e0b">● 노랑</span>
+          </label>
+          <label style="display:flex; align-items:center; gap:4px; cursor:pointer; font-size:0.82rem;">
+            <input type="radio" name="color" value="#ec4899" /> <span style="color:#ec4899">● 핑크</span>
+          </label>
+          <label style="display:flex; align-items:center; gap:4px; cursor:pointer; font-size:0.82rem;">
+            <input type="radio" name="color" value="#8b5cf6" /> <span style="color:#8b5cf6">● 보라</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="cancelBtn">취소</button>
+        <button class="btn btn-primary" id="saveBtn">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { notionAPI, isLoggedIn, logout } from "/js/api.js";
+
+    if (!isLoggedIn()) window.location.href = "/app.html";
+
+    let memos = [];
+
+    document.getElementById("logoutBtn").addEventListener("click", e => { e.preventDefault(); logout(); });
+
+    function toast(msg, type = "success") {
+      const el = document.createElement("div");
+      el.className = `toast ${type}`;
+      el.textContent = msg;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 2500);
+    }
+
+    function formatDate(str) {
+      try {
+        const d = new Date(str);
+        return `${d.getMonth()+1}/${d.getDate()}`;
+      } catch { return ""; }
+    }
+
+    function render(list) {
+      const grid = document.getElementById("memoGrid");
+      if (list.length === 0) {
+        grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon">💡</div>메모가 없어요. 아이디어를 기록해보세요!</div>`;
+        return;
+      }
+      grid.innerHTML = list.map(m => {
+        const tags = (m.tags || "").split(",").map(t => t.trim()).filter(Boolean);
+        return `
+          <div class="memo-card">
+            <div class="memo-color-bar" style="background:${m.color || '#10b981'}"></div>
+            <div class="memo-card-title">${m.title}</div>
+            <div class="memo-card-content">${m.content || ""}</div>
+            ${tags.length ? `<div>${tags.map(t => `<span class="tag">#${t}</span>`).join("")}</div>` : ""}
+            <div class="memo-card-footer">
+              <span class="memo-card-date">${formatDate(m.createdAt)}</span>
+              <div class="memo-card-actions">
+                <button class="btn btn-outline btn-sm" onclick="editItem('${m.id}')">수정</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteItem('${m.id}')">삭제</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function load() {
+      const res = await notionAPI("getMemos");
+      if (res?.ok) { memos = res.list || []; render(memos); }
+    }
+    load();
+
+    document.getElementById("searchInput").addEventListener("input", e => {
+      const q = e.target.value.toLowerCase();
+      render(memos.filter(m =>
+        m.title.toLowerCase().includes(q) ||
+        (m.content || "").toLowerCase().includes(q) ||
+        (m.tags || "").toLowerCase().includes(q)
+      ));
+    });
+
+    function openModal(item = null) {
+      document.getElementById("modal").style.display = "flex";
+      document.getElementById("modalTitle").textContent = item ? "메모 수정" : "메모 추가";
+      document.getElementById("editId").value = item?.id || "";
+      document.getElementById("fTitle").value = item?.title || "";
+      document.getElementById("fContent").value = item?.content || "";
+      document.getElementById("fTags").value = item?.tags || "";
+      const color = item?.color || "#10b981";
+      document.querySelectorAll("input[name='color']").forEach(r => { r.checked = r.value === color; });
+    }
+
+    document.getElementById("addBtn").addEventListener("click", () => openModal());
+    document.getElementById("cancelBtn").addEventListener("click", () => { document.getElementById("modal").style.display = "none"; });
+
+    document.getElementById("saveBtn").addEventListener("click", async () => {
+      const title = document.getElementById("fTitle").value.trim();
+      if (!title) { toast("제목을 입력해주세요", "error"); return; }
+
+      const id = document.getElementById("editId").value;
+      const color = document.querySelector("input[name='color']:checked")?.value || "#10b981";
+      const data = {
+        id,
+        title,
+        content: document.getElementById("fContent").value.trim(),
+        tags: document.getElementById("fTags").value.trim(),
+        color,
+      };
+
+      const btn = document.getElementById("saveBtn");
+      btn.textContent = "저장 중..."; btn.disabled = true;
+      const res = id ? await notionAPI("updateMemo", data) : await notionAPI("saveMemo", data);
+      btn.textContent = "저장"; btn.disabled = false;
+
+      if (res?.ok) {
+        document.getElementById("modal").style.display = "none";
+        toast(id ? "수정됐어요!" : "추가됐어요!");
+        await load();
+      } else {
+        toast("저장 실패", "error");
+      }
+    });
+
+    window.editItem = (id) => { const item = memos.find(m => m.id === id); if (item) openModal(item); };
+    window.deleteItem = async (id) => {
+      if (!confirm("삭제할까요?")) return;
+      const res = await notionAPI("deleteMemo", { id });
+      if (res?.ok) { toast("삭제됐어요!"); await load(); }
+      else toast("삭제 실패", "error");
+    };
+  </script>
+</body>
+</html>
