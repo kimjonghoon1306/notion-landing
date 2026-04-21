@@ -100,7 +100,7 @@ body {
 [data-theme="light"] .header-nav a:hover { background: rgba(0,0,0,0.05); }
 [data-theme="light"] .header-nav a.active { background: rgba(255,61,110,0.08); }
 
-.header-right { display: flex; align-items: center; gap: 8px; }
+.header-right { display: flex; align-items: center; gap: 12px; }
 
 .theme-btn {
   width: 36px; height: 36px; border-radius: 10px;
@@ -385,7 +385,7 @@ tbody tr:hover td { background: rgba(255,61,110,0.04); }
   th { padding: 10px 10px; font-size: 0.68rem; }
   td { padding: 10px 10px; }
   .modal { padding: 22px 18px; border-radius: 18px; }
-  .header-right { gap: 6px; }
+  .header-right { gap: 10px; }
 }
 
 @media (max-width: 480px) {
