@@ -363,11 +363,17 @@
   </div>
 
   <script>
-    // 이미 로그인돼 있으면 대시보드 버튼 표시
+    // URL에서 토큰 받아서 저장 (BlogAuto Pro에서 넘어올 때)
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlToken = urlParams.get("token");
+    if (urlToken) {
+      localStorage.setItem("ba_token", urlToken);
+      window.location.replace("/keywords.html");
+    }
+
+    // 이미 로그인돼 있으면 바로 keywords.html로 이동
     if (localStorage.getItem("ba_token")) {
-      document.getElementById("loginBtn").style.display = "none";
-      document.getElementById("dashboardBtn").style.display = "flex";
-      document.getElementById("backToDashboard").style.display = "inline-flex";
+      window.location.replace("/keywords.html");
     }
 
     function switchTab(tab) {
