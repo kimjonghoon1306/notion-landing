@@ -332,3 +332,63 @@ tbody tr:hover td { background: rgba(255,61,110,0.04); }
   .stats-grid { gap: 10px; }
   .toolbar { flex-direction: column; }
 }
+
+/* ════════════════════════════════════════
+   모바일 최적화 - 하단 탭바
+════════════════════════════════════════ */
+
+/* 하단 탭바 */
+.bottom-nav {
+  display: none;
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(10,10,15,0.95);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+  padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+}
+[data-theme="light"] .bottom-nav { background: rgba(248,246,255,0.95); }
+.bottom-nav-inner {
+  display: flex; align-items: center; justify-content: space-around;
+  max-width: 480px; margin: 0 auto;
+}
+.bottom-nav-item {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 6px 16px; border-radius: 12px; text-decoration: none;
+  color: var(--text2); transition: all 0.2s; border: none;
+  background: transparent; cursor: pointer; font-family: 'Sora', sans-serif;
+}
+.bottom-nav-item.active { color: var(--accent); }
+.bottom-nav-item:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+.bottom-nav-icon { font-size: 1.3rem; }
+.bottom-nav-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.02em; }
+
+/* 모바일에서 헤더 간소화 */
+@media (max-width: 768px) {
+  .bottom-nav { display: flex; }
+  .header-nav { display: none; }
+  .header { height: 54px; padding: 0 14px; }
+  .header-logo span { display: none; }
+  .bounce-btn .btn-text { display: none; }
+  .bounce-btn { padding: 7px 10px; font-size: 0.8rem; }
+  .logout-btn { font-size: 0; padding: 7px 10px; }
+  .logout-btn::after { content: '👋'; font-size: 1rem; }
+  .container { padding: 20px 14px 90px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .stat-card { padding: 14px; }
+  .stat-value { font-size: 1.5rem; }
+  .stat-icon { font-size: 1.1rem; margin-bottom: 8px; }
+  .page-title { font-size: 1.3rem; }
+  .toolbar { gap: 8px; }
+  .btn { padding: 10px 14px; font-size: 0.82rem; }
+  table { font-size: 0.78rem; }
+  th { padding: 10px 10px; font-size: 0.68rem; }
+  td { padding: 10px 10px; }
+  .modal { padding: 22px 18px; border-radius: 18px; }
+  .header-right { gap: 6px; }
+}
+
+@media (max-width: 480px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .bounce-btn { padding: 6px 9px; }
+  .page-header { margin-bottom: 18px; }
+}
