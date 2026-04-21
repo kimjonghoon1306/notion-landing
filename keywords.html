@@ -1,53 +1,74 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>키워드 관리 - BlogAuto Pro</title>
+  <title>키워드 관리 — BlogAuto Pro</title>
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
+<div class="bg-glow"><div class="bg-glow-1"></div><div class="bg-glow-2"></div></div>
+<div class="wrap">
 
   <!-- 헤더 -->
   <header class="header">
-    <a class="header-logo" href="/keywords.html">📋 BlogAuto Pro</a>
-    <nav class="header-nav">
-      <a href="/keywords.html" class="active">🔍 <span>키워드</span></a>
-      <a href="/posts.html">📝 <span>발행 글</span></a>
-      <a href="/revenue.html">💰 <span>수익</span></a>
-      <a href="/memo.html">💡 <span>메모</span></a>
-      <a href="#" id="logoutBtn" style="color:var(--red)">로그아웃</a>
-    </nav>
+    <div class="header-left">
+      <a class="header-logo" href="/keywords.html">
+        <div class="header-logo-icon">📋</div>
+        <span>BlogAuto Pro</span>
+      </a>
+      <nav class="header-nav">
+        <a href="/keywords.html" class="active">🔍 <span>키워드</span></a>
+        <a href="/posts.html">📝 <span>발행 글</span></a>
+        <a href="/revenue.html">💰 <span>수익</span></a>
+        <a href="/memo.html">💡 <span>메모</span></a>
+      </nav>
+    </div>
+    <div class="header-right">
+      <a href="/index.html" class="bounce-btn bounce-btn-home">🏠 <span class="btn-text">대문으로</span></a>
+      <a href="https://www.blogautopro.com/dashboard" class="bounce-btn bounce-btn-dashboard">🚀 <span class="btn-text">대시보드</span></a>
+      <button class="theme-btn" id="themeBtn">☀️</button>
+      <button class="logout-btn" id="logoutBtn">로그아웃</button>
+    </div>
   </header>
 
   <div class="container">
-    <div class="page-title">🔍 키워드 관리</div>
-    <div class="page-desc">언제 어떤 키워드를 썼는지 기록하고 관리하세요</div>
 
-    <!-- 통계 -->
-    <div class="stats-grid" id="stats">
-      <div class="stat-card">
-        <div class="stat-label">전체 키워드</div>
-        <div class="stat-value" id="totalCount">-</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">이번 달 사용</div>
-        <div class="stat-value" id="thisMonthCount">-</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">카테고리 수</div>
-        <div class="stat-value" id="categoryCount">-</div>
+    <!-- 페이지 헤더 -->
+    <div class="page-header">
+      <div>
+        <div class="page-title">🔍 키워드 관리</div>
+        <div class="page-desc">언제 어떤 키워드를 썼는지 기록하고 관리하세요</div>
       </div>
     </div>
 
-    <!-- 추가 버튼 + 검색 -->
-    <div style="display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;">
-      <input type="text" class="form-input" id="searchInput" placeholder="키워드 검색..." style="flex:1; min-width:160px;" />
-      <button class="btn btn-primary" id="addBtn">+ 키워드 추가</button>
+    <!-- 통계 -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">📦</div>
+        <div class="stat-label">전체 키워드</div>
+        <div class="stat-value" id="totalCount">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📅</div>
+        <div class="stat-label">이번 달 사용</div>
+        <div class="stat-value" id="thisMonthCount">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🗂️</div>
+        <div class="stat-label">카테고리 수</div>
+        <div class="stat-value" id="categoryCount">0</div>
+      </div>
+    </div>
+
+    <!-- 툴바 -->
+    <div class="toolbar">
+      <input type="text" class="search-input" id="searchInput" placeholder="🔍 키워드, 카테고리, 메모 검색..." />
+      <button class="btn btn-primary" id="addBtn">✚ 키워드 추가</button>
     </div>
 
     <!-- 테이블 -->
-    <div class="card" style="padding:0; overflow:hidden;">
+    <div class="table-card">
       <div class="table-wrap">
         <table>
           <thead>
@@ -60,176 +81,147 @@
             </tr>
           </thead>
           <tbody id="keywordList">
-            <tr><td colspan="5"><div class="loading">불러오는 중...</div></td></tr>
+            <tr><td colspan="5">
+              <div class="loading-wrap"><div class="loading-spinner"></div>불러오는 중...</div>
+            </td></tr>
           </tbody>
         </table>
       </div>
     </div>
+
   </div>
+</div>
 
-  <!-- 추가/수정 모달 -->
-  <div class="modal-overlay" id="modal" style="display:none;">
-    <div class="modal">
-      <div class="modal-title" id="modalTitle">키워드 추가</div>
-      <input type="hidden" id="editId" />
-
-      <div class="form-group">
-        <label class="form-label">키워드 *</label>
-        <input type="text" class="form-input" id="fKeyword" placeholder="예: 맛집 추천" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">카테고리</label>
-        <input type="text" class="form-input" id="fCategory" placeholder="예: 음식, 여행, 재테크" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">사용일</label>
-        <input type="date" class="form-input" id="fUsedAt" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">메모</label>
-        <textarea class="form-textarea" id="fMemo" placeholder="참고할 내용 메모..."></textarea>
-      </div>
-
-      <div class="modal-footer">
-        <button class="btn btn-outline" id="cancelBtn">취소</button>
-        <button class="btn btn-primary" id="saveBtn">저장</button>
-      </div>
+<!-- 모달 -->
+<div class="modal-overlay" id="modal" style="display:none;">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">✚ 키워드 추가</div>
+      <button class="modal-close" id="closeBtn">✕</button>
+    </div>
+    <input type="hidden" id="editId" />
+    <div class="form-group">
+      <label class="form-label">키워드 *</label>
+      <input type="text" class="form-input" id="fKeyword" placeholder="예: 맛집 추천, 재테크 방법" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">카테고리</label>
+      <input type="text" class="form-input" id="fCategory" placeholder="예: 음식, 여행, 재테크" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">사용일</label>
+      <input type="date" class="form-input" id="fUsedAt" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">메모</label>
+      <textarea class="form-textarea" id="fMemo" placeholder="참고할 내용, 링크 등 자유롭게 메모..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="cancelBtn">취소</button>
+      <button class="btn btn-primary" id="saveBtn">💾 저장</button>
     </div>
   </div>
+</div>
 
-  <script type="module">
-    import { notionAPI, isLoggedIn, logout } from "/js/api.js";
+<script type="module">
+  import { notionAPI, isLoggedIn } from "/js/api.js";
+  import { initHeader, toast } from "/js/common.js";
 
-    if (!isLoggedIn()) window.location.href = "/app.html";
+  if (!isLoggedIn()) window.location.href = "/app.html";
+  initHeader();
 
-    let keywords = [];
+  let keywords = [];
 
-    // 로그아웃
-    document.getElementById("logoutBtn").addEventListener("click", (e) => {
-      e.preventDefault(); logout();
-    });
+  function updateStats() {
+    document.getElementById("totalCount").textContent = keywords.length;
+    const thisMonth = new Date().toISOString().slice(0, 7);
+    document.getElementById("thisMonthCount").textContent = keywords.filter(k => (k.usedAt || "").startsWith(thisMonth)).length;
+    document.getElementById("categoryCount").textContent = new Set(keywords.map(k => k.category).filter(Boolean)).size;
+  }
 
-    // 토스트
-    function toast(msg, type = "success") {
-      const el = document.createElement("div");
-      el.className = `toast ${type}`;
-      el.textContent = msg;
-      document.body.appendChild(el);
-      setTimeout(() => el.remove(), 2500);
+  function render(list) {
+    const tbody = document.getElementById("keywordList");
+    if (!list.length) {
+      tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state">
+        <div class="empty-state-icon">🔍</div>
+        <div class="empty-state-title">키워드가 없어요</div>
+        <div class="empty-state-desc">추가 버튼을 눌러 첫 키워드를 등록해보세요!</div>
+      </div></td></tr>`;
+      return;
     }
+    tbody.innerHTML = list.map(k => `
+      <tr>
+        <td><strong style="font-size:0.9rem;">${k.keyword}</strong></td>
+        <td>${k.category ? `<span class="badge badge-blue">${k.category}</span>` : `<span style="color:var(--text2)">—</span>`}</td>
+        <td style="color:var(--text2); font-size:0.81rem;">${k.usedAt || "—"}</td>
+        <td style="color:var(--text2); font-size:0.81rem; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${k.memo || "—"}</td>
+        <td>
+          <div style="display:flex; gap:6px; justify-content:flex-end;">
+            <button class="btn btn-outline btn-sm" onclick="editItem('${k.id}')">✏️ 수정</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteItem('${k.id}')">🗑️</button>
+          </div>
+        </td>
+      </tr>
+    `).join("");
+  }
 
-    // 통계 업데이트
-    function updateStats() {
-      document.getElementById("totalCount").textContent = keywords.length;
-      const thisMonth = new Date().toISOString().slice(0, 7);
-      const monthCount = keywords.filter(k => (k.usedAt || "").startsWith(thisMonth)).length;
-      document.getElementById("thisMonthCount").textContent = monthCount;
-      const cats = new Set(keywords.map(k => k.category).filter(Boolean));
-      document.getElementById("categoryCount").textContent = cats.size;
-    }
+  async function load() {
+    const res = await notionAPI("getKeywords");
+    if (res?.ok) { keywords = res.list || []; updateStats(); render(keywords); }
+  }
+  load();
 
-    // 렌더링
-    function render(list) {
-      const tbody = document.getElementById("keywordList");
-      if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5"><div class="empty"><div class="empty-icon">🔍</div>키워드가 없어요. 추가해보세요!</div></td></tr>`;
-        return;
-      }
-      tbody.innerHTML = list.map(k => `
-        <tr>
-          <td><strong>${k.keyword}</strong></td>
-          <td>${k.category ? `<span class="badge badge-blue">${k.category}</span>` : '<span style="color:var(--muted)">-</span>'}</td>
-          <td style="color:var(--muted); font-size:0.8rem;">${k.usedAt || "-"}</td>
-          <td style="color:var(--muted); font-size:0.8rem; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${k.memo || "-"}</td>
-          <td style="white-space:nowrap;">
-            <button class="btn btn-outline btn-sm" onclick="editItem('${k.id}')">수정</button>
-            <button class="btn btn-danger btn-sm" onclick="deleteItem('${k.id}')">삭제</button>
-          </td>
-        </tr>
-      `).join("");
-    }
+  document.getElementById("searchInput").addEventListener("input", e => {
+    const q = e.target.value.toLowerCase();
+    render(keywords.filter(k =>
+      k.keyword.toLowerCase().includes(q) ||
+      (k.category || "").toLowerCase().includes(q) ||
+      (k.memo || "").toLowerCase().includes(q)
+    ));
+  });
 
-    // 데이터 로드
-    async function load() {
-      const res = await notionAPI("getKeywords");
-      if (res?.ok) {
-        keywords = res.list || [];
-        updateStats();
-        render(keywords);
-      }
-    }
-    load();
+  function openModal(item = null) {
+    document.getElementById("modal").style.display = "flex";
+    document.getElementById("modalTitle").textContent = item ? "✏️ 키워드 수정" : "✚ 키워드 추가";
+    document.getElementById("editId").value = item?.id || "";
+    document.getElementById("fKeyword").value = item?.keyword || "";
+    document.getElementById("fCategory").value = item?.category || "";
+    document.getElementById("fUsedAt").value = item?.usedAt || new Date().toISOString().slice(0, 10);
+    document.getElementById("fMemo").value = item?.memo || "";
+    setTimeout(() => document.getElementById("fKeyword").focus(), 100);
+  }
+  function closeModal() { document.getElementById("modal").style.display = "none"; }
 
-    // 검색
-    document.getElementById("searchInput").addEventListener("input", e => {
-      const q = e.target.value.toLowerCase();
-      const filtered = keywords.filter(k =>
-        k.keyword.toLowerCase().includes(q) ||
-        (k.category || "").toLowerCase().includes(q) ||
-        (k.memo || "").toLowerCase().includes(q)
-      );
-      render(filtered);
-    });
+  document.getElementById("addBtn").addEventListener("click", () => openModal());
+  document.getElementById("cancelBtn").addEventListener("click", closeModal);
+  document.getElementById("closeBtn").addEventListener("click", closeModal);
 
-    // 모달 열기
-    function openModal(item = null) {
-      document.getElementById("modal").style.display = "flex";
-      document.getElementById("modalTitle").textContent = item ? "키워드 수정" : "키워드 추가";
-      document.getElementById("editId").value = item?.id || "";
-      document.getElementById("fKeyword").value = item?.keyword || "";
-      document.getElementById("fCategory").value = item?.category || "";
-      document.getElementById("fUsedAt").value = item?.usedAt || new Date().toISOString().slice(0, 10);
-      document.getElementById("fMemo").value = item?.memo || "";
-    }
-
-    document.getElementById("addBtn").addEventListener("click", () => openModal());
-    document.getElementById("cancelBtn").addEventListener("click", () => {
-      document.getElementById("modal").style.display = "none";
-    });
-
-    // 저장
-    document.getElementById("saveBtn").addEventListener("click", async () => {
-      const keyword = document.getElementById("fKeyword").value.trim();
-      if (!keyword) { toast("키워드를 입력해주세요", "error"); return; }
-
-      const id = document.getElementById("editId").value;
-      const data = {
-        id,
-        keyword,
-        category: document.getElementById("fCategory").value.trim(),
-        usedAt: document.getElementById("fUsedAt").value,
-        memo: document.getElementById("fMemo").value.trim(),
-      };
-
-      const btn = document.getElementById("saveBtn");
-      btn.textContent = "저장 중..."; btn.disabled = true;
-
-      const res = id
-        ? await notionAPI("updateKeyword", data)
-        : await notionAPI("saveKeyword", data);
-
-      btn.textContent = "저장"; btn.disabled = false;
-
-      if (res?.ok) {
-        document.getElementById("modal").style.display = "none";
-        toast(id ? "수정됐어요!" : "추가됐어요!");
-        await load();
-      } else {
-        toast("저장 실패", "error");
-      }
-    });
-
-    // 수정/삭제 전역
-    window.editItem = (id) => {
-      const item = keywords.find(k => k.id === id);
-      if (item) openModal(item);
+  document.getElementById("saveBtn").addEventListener("click", async () => {
+    const keyword = document.getElementById("fKeyword").value.trim();
+    if (!keyword) { toast("키워드를 입력해주세요", "error"); return; }
+    const id = document.getElementById("editId").value;
+    const data = { id, keyword,
+      category: document.getElementById("fCategory").value.trim(),
+      usedAt: document.getElementById("fUsedAt").value,
+      memo: document.getElementById("fMemo").value.trim(),
     };
-    window.deleteItem = async (id) => {
-      if (!confirm("삭제할까요?")) return;
-      const res = await notionAPI("deleteKeyword", { id });
-      if (res?.ok) { toast("삭제됐어요!"); await load(); }
-      else toast("삭제 실패", "error");
-    };
-  </script>
+    const btn = document.getElementById("saveBtn");
+    btn.textContent = "저장 중..."; btn.disabled = true;
+    const res = id ? await notionAPI("updateKeyword", data) : await notionAPI("saveKeyword", data);
+    btn.textContent = "💾 저장"; btn.disabled = false;
+    if (res?.ok) { closeModal(); toast(id ? "수정됐어요!" : "추가됐어요!"); await load(); }
+    else toast("저장 실패", "error");
+  });
+
+  window.editItem = id => openModal(keywords.find(k => k.id === id));
+  window.deleteItem = async id => {
+    if (!confirm("삭제할까요?")) return;
+    const res = await notionAPI("deleteKeyword", { id });
+    if (res?.ok) { toast("삭제됐어요!"); await load(); }
+    else toast("삭제 실패", "error");
+  };
+
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+</script>
 </body>
 </html>
