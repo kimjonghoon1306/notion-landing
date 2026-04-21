@@ -3,94 +3,342 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BlogAuto Pro - 블로그 관리</title>
-  <link rel="stylesheet" href="/css/style.css" />
+  <title>로그인 — BlogAuto Pro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
-    .login-wrap {
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { height: 100%; }
+    body {
+      font-family: 'Sora', sans-serif;
       min-height: 100vh;
+      background: #0a0a0f;
+      color: #f0eeff;
+      overflow-x: hidden;
       display: flex;
+      flex-direction: column;
+    }
+
+    /* ── 배경 효과 ── */
+    .bg-wrap {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+    }
+    .bg-blob {
+      position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.35;
+      animation: blobFloat 9s ease-in-out infinite;
+    }
+    .bg-blob-1 { width: 600px; height: 600px; background: rgba(255,61,110,0.25); top: -200px; left: -150px; animation-delay: 0s; }
+    .bg-blob-2 { width: 500px; height: 500px; background: rgba(168,85,247,0.2); bottom: -150px; right: -100px; animation-delay: -4s; }
+    .bg-blob-3 { width: 350px; height: 350px; background: rgba(236,72,153,0.15); top: 40%; left: 50%; animation-delay: -7s; }
+    @keyframes blobFloat {
+      0%,100% { transform: translateY(0) scale(1); }
+      50%      { transform: translateY(-30px) scale(1.06); }
+    }
+
+    /* 그리드 배경 */
+    .bg-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,61,110,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,61,110,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+
+    /* 떠다니는 아이콘들 */
+    .float-icon {
+      position: absolute; font-size: 1.8rem; opacity: 0.12;
+      animation: floatIcon 6s ease-in-out infinite;
+    }
+    .float-icon:nth-child(1) { top: 15%; left: 8%; animation-delay: 0s; }
+    .float-icon:nth-child(2) { top: 25%; right: 10%; animation-delay: -2s; }
+    .float-icon:nth-child(3) { top: 60%; left: 5%; animation-delay: -4s; }
+    .float-icon:nth-child(4) { bottom: 20%; right: 8%; animation-delay: -1s; }
+    .float-icon:nth-child(5) { bottom: 35%; left: 15%; animation-delay: -3s; }
+    .float-icon:nth-child(6) { top: 45%; right: 15%; animation-delay: -5s; }
+    @keyframes floatIcon {
+      0%,100% { transform: translateY(0) rotate(0deg); }
+      50%      { transform: translateY(-20px) rotate(10deg); }
+    }
+
+    /* ── 메인 레이아웃 ── */
+    .page-wrap {
+      position: relative; z-index: 1;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 24px;
+      padding: 24px 16px;
+      min-height: 100vh;
     }
-    .login-box {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
+
+    /* 상단 로고 */
+    .top-logo {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 40px; text-decoration: none;
+    }
+    .top-logo-icon {
+      width: 42px; height: 42px; border-radius: 12px;
+      background: linear-gradient(135deg, #ff3d6e, #ec4899);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+      box-shadow: 0 4px 20px rgba(255,61,110,0.4);
+      animation: logoPulse 3s ease-in-out infinite;
+    }
+    @keyframes logoPulse {
+      0%,100% { box-shadow: 0 4px 20px rgba(255,61,110,0.4); }
+      50%      { box-shadow: 0 4px 32px rgba(255,61,110,0.7); }
+    }
+    .top-logo-text {
+      font-size: 1.15rem; font-weight: 800; letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #fff, #f0c0d0);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+
+    /* 탭 (로그인/회원가입 전환) */
+    .tab-wrap {
+      display: flex; background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px; padding: 4px;
+      margin-bottom: 32px; width: 100%; max-width: 400px;
+    }
+    .tab-btn {
+      flex: 1; padding: 10px; border-radius: 10px; border: none;
+      font-family: 'Sora', sans-serif; font-size: 0.88rem; font-weight: 700;
+      cursor: pointer; transition: all 0.25s; color: rgba(255,255,255,0.5);
+      background: transparent;
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, #ff3d6e, #ec4899);
+      color: white;
+      box-shadow: 0 4px 16px rgba(255,61,110,0.4);
+    }
+
+    /* 카드 */
+    .auth-card {
+      width: 100%; max-width: 420px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 24px;
       padding: 36px 32px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+    }
+
+    .auth-title {
+      font-size: 1.4rem; font-weight: 800; letter-spacing: -0.03em;
+      margin-bottom: 6px;
+    }
+    .auth-subtitle {
+      font-size: 0.83rem; color: rgba(255,255,255,0.45);
+      margin-bottom: 28px; line-height: 1.5;
+    }
+
+    /* 폼 */
+    .form-group { margin-bottom: 16px; }
+    .form-label {
+      display: block; font-size: 0.78rem; font-weight: 600;
+      color: rgba(255,255,255,0.5); margin-bottom: 8px; letter-spacing: 0.02em;
+    }
+    .form-input {
       width: 100%;
-      max-width: 380px;
+      background: rgba(255,255,255,0.06);
+      border: 1.5px solid rgba(255,255,255,0.1);
+      border-radius: 12px; padding: 13px 16px;
+      font-size: 0.9rem; font-family: 'Sora', sans-serif;
+      color: #f0eeff; outline: none; transition: all 0.2s;
     }
-    .login-logo {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--green);
-      margin-bottom: 4px;
+    .form-input::placeholder { color: rgba(255,255,255,0.2); }
+    .form-input:focus {
+      border-color: #ff3d6e;
+      background: rgba(255,61,110,0.06);
+      box-shadow: 0 0 0 3px rgba(255,61,110,0.15);
     }
-    .login-subtitle {
-      font-size: 0.82rem;
-      color: var(--muted);
-      margin-bottom: 28px;
+
+    /* 에러 */
+    .error-box {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.3);
+      border-radius: 10px; padding: 11px 14px;
+      font-size: 0.82rem; color: #fca5a5;
+      margin-bottom: 16px; display: none;
     }
-    .login-error {
-      background: #ef444415;
-      border: 1px solid var(--red);
-      border-radius: 8px;
-      padding: 10px 12px;
-      font-size: 0.82rem;
-      color: var(--red);
-      margin-bottom: 16px;
-      display: none;
+
+    /* 제출 버튼 */
+    .btn-submit {
+      width: 100%; padding: 15px;
+      border: none; border-radius: 14px;
+      font-family: 'Sora', sans-serif; font-size: 0.95rem; font-weight: 700;
+      color: white; cursor: pointer;
+      background: linear-gradient(135deg, #ff3d6e, #ec4899);
+      background-size: 200% 200%;
+      box-shadow: 0 6px 24px rgba(255,61,110,0.45);
+      transition: all 0.25s;
+      animation: gradientShift 4s ease infinite;
+      margin-top: 8px;
+    }
+    .btn-submit:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 32px rgba(255,61,110,0.6);
+    }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* 구분선 */
+    .divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 20px 0; color: rgba(255,255,255,0.2); font-size: 0.78rem;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.1);
+    }
+
+    /* 하단 링크 */
+    .auth-footer {
+      text-align: center; margin-top: 20px;
+      font-size: 0.82rem; color: rgba(255,255,255,0.4);
+    }
+    .auth-footer a { color: #ff3d6e; font-weight: 600; text-decoration: none; }
+    .auth-footer a:hover { text-decoration: underline; }
+
+    /* 랜딩으로 돌아가기 */
+    .back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      margin-top: 28px; font-size: 0.8rem; color: rgba(255,255,255,0.3);
+      text-decoration: none; transition: color 0.2s;
+    }
+    .back-link:hover { color: rgba(255,255,255,0.7); }
+
+    /* 로그인 성공 시 대시보드 버튼 */
+    .btn-dashboard {
+      width: 100%; padding: 15px;
+      border: none; border-radius: 14px;
+      font-family: 'Sora', sans-serif; font-size: 0.95rem; font-weight: 700;
+      color: white; cursor: pointer;
+      background: linear-gradient(135deg, #10b981, #059669);
+      box-shadow: 0 6px 24px rgba(16,185,129,0.4);
+      transition: all 0.25s; text-decoration: none;
+      display: none; align-items: center; justify-content: center; gap: 8px;
+      margin-top: 8px;
+    }
+
+    /* 반응형 */
+    @media (max-width: 480px) {
+      .auth-card { padding: 28px 20px; border-radius: 20px; }
+      .auth-title { font-size: 1.2rem; }
     }
   </style>
 </head>
 <body>
-  <div class="login-wrap">
-    <div class="login-box">
-      <div class="login-logo">📋 BlogAuto Pro</div>
-      <div class="login-subtitle">블로그 관리 도구에 로그인하세요</div>
 
-      <div class="login-error" id="errorMsg"></div>
+  <!-- 배경 -->
+  <div class="bg-wrap">
+    <div class="bg-grid"></div>
+    <div class="bg-blob bg-blob-1"></div>
+    <div class="bg-blob bg-blob-2"></div>
+    <div class="bg-blob bg-blob-3"></div>
+    <div class="float-icon">📊</div>
+    <div class="float-icon">🔍</div>
+    <div class="float-icon">💰</div>
+    <div class="float-icon">✍️</div>
+    <div class="float-icon">📈</div>
+    <div class="float-icon">🚀</div>
+  </div>
+
+  <div class="page-wrap">
+
+    <!-- 로고 -->
+    <a href="/index.html" class="top-logo">
+      <div class="top-logo-icon">📋</div>
+      <div class="top-logo-text">BlogAuto Pro</div>
+    </a>
+
+    <!-- 탭 -->
+    <div class="tab-wrap">
+      <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">🔑 로그인</button>
+      <button class="tab-btn" id="tabSignup" onclick="switchTab('signup')">✨ 회원가입</button>
+    </div>
+
+    <!-- 로그인 카드 -->
+    <div class="auth-card" id="loginCard">
+      <div class="auth-title">다시 오셨군요! 👋</div>
+      <div class="auth-subtitle">BlogAuto Pro 계정으로 로그인하세요</div>
+
+      <div class="error-box" id="loginError"></div>
 
       <div class="form-group">
         <label class="form-label">아이디</label>
-        <input type="text" class="form-input" id="userId" placeholder="아이디 입력" />
+        <input type="text" class="form-input" id="loginId" placeholder="아이디 입력" autocomplete="username" />
       </div>
       <div class="form-group">
         <label class="form-label">비밀번호</label>
-        <input type="password" class="form-input" id="password" placeholder="비밀번호 입력" />
+        <input type="password" class="form-input" id="loginPw" placeholder="비밀번호 입력" autocomplete="current-password" />
       </div>
-      <button class="btn btn-primary" style="width:100%; justify-content:center; padding:11px;" id="loginBtn">
-        로그인
-      </button>
 
-      <div style="margin-top:20px; text-align:center; font-size:0.8rem; color:var(--muted)">
-        계정이 없으신가요?
-        <a href="https://www.blogautopro.com/signup" style="color:var(--green)">회원가입</a>
+      <button class="btn-submit" id="loginBtn" onclick="doLogin()">🔑 로그인</button>
+      <a href="/keywords.html" class="btn-dashboard" id="dashboardBtn">📊 블로그 관리 시작하기 →</a>
+
+      <div class="auth-footer" style="margin-top:16px;">
+        계정이 없으신가요? <a href="#" onclick="switchTab('signup')">회원가입하기</a>
       </div>
     </div>
+
+    <!-- 회원가입 카드 -->
+    <div class="auth-card" id="signupCard" style="display:none;">
+      <div class="auth-title">함께 시작해요! 🚀</div>
+      <div class="auth-subtitle">BlogAuto Pro 계정을 만들고 블로그 관리를 시작하세요</div>
+
+      <div class="error-box" id="signupError"></div>
+
+      <button class="btn-submit" style="background: linear-gradient(135deg, #6c5ce7, #a855f7); box-shadow: 0 6px 24px rgba(108,92,231,0.45);"
+        onclick="window.location.href='https://www.blogautopro.com/signup'">
+        ✨ BlogAuto Pro에서 회원가입하기
+      </button>
+
+      <div class="divider">회원가입 후 로그인하세요</div>
+
+      <div class="auth-footer">
+        이미 계정이 있으신가요? <a href="#" onclick="switchTab('login')">로그인하기</a>
+      </div>
+    </div>
+
+    <!-- 뒤로가기 -->
+    <a href="/index.html" class="back-link">← 랜딩 페이지로 돌아가기</a>
+
   </div>
 
   <script>
-    // 이미 로그인돼 있으면 키워드 페이지로 이동
+    // 이미 로그인돼 있으면 바로 대시보드로
     if (localStorage.getItem("ba_token")) {
-      window.location.href = "/keywords.html";
+      document.getElementById("loginBtn").style.display = "none";
+      const db = document.getElementById("dashboardBtn");
+      db.style.display = "flex";
     }
 
-    async function login() {
-      const id = document.getElementById("userId").value.trim();
-      const pw = document.getElementById("password").value.trim();
-      const errEl = document.getElementById("errorMsg");
+    function switchTab(tab) {
+      const isLogin = tab === "login";
+      document.getElementById("tabLogin").classList.toggle("active", isLogin);
+      document.getElementById("tabSignup").classList.toggle("active", !isLogin);
+      document.getElementById("loginCard").style.display = isLogin ? "block" : "none";
+      document.getElementById("signupCard").style.display = isLogin ? "none" : "block";
+    }
+
+    async function doLogin() {
+      const id = document.getElementById("loginId").value.trim();
+      const pw = document.getElementById("loginPw").value.trim();
+      const errEl = document.getElementById("loginError");
       const btn = document.getElementById("loginBtn");
 
       if (!id || !pw) {
         errEl.textContent = "아이디와 비밀번호를 입력해주세요";
-        errEl.style.display = "block";
-        return;
+        errEl.style.display = "block"; return;
       }
 
-      btn.textContent = "로그인 중...";
-      btn.disabled = true;
+      btn.textContent = "로그인 중..."; btn.disabled = true;
+      errEl.style.display = "none";
 
       try {
         const res = await fetch("https://www.blogautopro.com/api/auth", {
@@ -103,23 +351,30 @@
         if (data.ok && data.token) {
           localStorage.setItem("ba_token", data.token);
           localStorage.setItem("ba_user", JSON.stringify(data.user || { id }));
-          window.location.href = "/keywords.html";
+          btn.textContent = "✅ 로그인 성공!";
+          setTimeout(() => { window.location.href = "/keywords.html"; }, 600);
         } else {
-          errEl.textContent = data.error || "로그인에 실패했습니다";
+          errEl.textContent = data.error || "아이디 또는 비밀번호가 틀렸어요";
           errEl.style.display = "block";
-          btn.textContent = "로그인";
-          btn.disabled = false;
+          btn.textContent = "🔑 로그인"; btn.disabled = false;
         }
       } catch {
         errEl.textContent = "네트워크 오류가 발생했습니다";
         errEl.style.display = "block";
-        btn.textContent = "로그인";
-        btn.disabled = false;
+        btn.textContent = "🔑 로그인"; btn.disabled = false;
       }
     }
 
-    document.getElementById("loginBtn").addEventListener("click", login);
-    document.addEventListener("keydown", e => { if (e.key === "Enter") login(); });
+    // URL 파라미터로 탭 전환
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("tab") === "signup") switchTab("signup");
+
+    // Enter 키
+    document.addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        if (document.getElementById("loginCard").style.display !== "none") doLogin();
+      }
+    });
   </script>
 </body>
 </html>
