@@ -57,6 +57,17 @@
       </div>
     </div>
 
+    <!-- 수익 차트 -->
+    <div class="chart-wrap" id="chartWrap" style="display:none;">
+      <div class="chart-title">📊 월별 수익 추이</div>
+      <div class="chart-bars" id="chartBars"></div>
+      <div class="chart-legend">
+        <div class="chart-legend-item"><div class="chart-legend-dot" style="background:var(--accent)"></div>애드센스</div>
+        <div class="chart-legend-item"><div class="chart-legend-dot" style="background:var(--purple)"></div>쿠팡파트너스</div>
+        <div class="chart-legend-item"><div class="chart-legend-dot" style="background:var(--green)"></div>기타</div>
+      </div>
+    </div>
+
     <div class="toolbar" style="justify-content:flex-end;">
       <button class="btn btn-primary" id="addBtn">✚ 수익 입력</button>
     </div>
@@ -170,9 +181,29 @@
     }).join("");
   }
 
+  function renderChart(list) {
+    if (!list.length) { document.getElementById("chartWrap").style.display = "none"; return; }
+    document.getElementById("chartWrap").style.display = "block";
+    const sorted = [...list].sort((a,b) => a.month.localeCompare(b.month)).slice(-6);
+    const maxVal = Math.max(...sorted.map(r => Math.max(parseInt(r.adsense)||0, parseInt(r.coupang)||0, parseInt(r.other)||0)), 1);
+    const bars = document.getElementById("chartBars");
+    bars.innerHTML = sorted.map(r => {
+      const a = parseInt(r.adsense)||0, c = parseInt(r.coupang)||0, o = parseInt(r.other)||0;
+      const aH = Math.max((a/maxVal)*78, a?4:0), cH = Math.max((c/maxVal)*78, c?4:0), oH = Math.max((o/maxVal)*78, o?4:0);
+      return `<div class="chart-bar-wrap">
+        <div style="display:flex;align-items:flex-end;gap:2px;height:78px;">
+          <div class="chart-bar" style="width:28%;height:${aH}px;" title="애드센스 ₩${a.toLocaleString()}"></div>
+          <div class="chart-bar bar-purple" style="width:28%;height:${cH}px;" title="쿠팡 ₩${c.toLocaleString()}"></div>
+          <div class="chart-bar bar-green" style="width:28%;height:${oH}px;" title="기타 ₩${o.toLocaleString()}"></div>
+        </div>
+        <div class="chart-bar-label">${r.month.slice(5)}월</div>
+      </div>`;
+    }).join('');
+  }
+
   async function load() {
     const res = await notionAPI("getRevenue");
-    if (res?.ok) { revenues = res.list || []; updateStats(); render(revenues); }
+    if (res?.ok) { revenues = res.list || []; updateStats(); render(revenues); renderChart(revenues); }
   }
   load();
 
